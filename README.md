@@ -41,7 +41,7 @@ will create a taxonomic tree structured like this
         "SubClasses": [
             {
                 "ScientificName": "SubExampleScientificName",
-                "TaxId"; "SubExampleTaxId"
+                "TaxId": "SubExampleTaxId"
             },
             ...
         ]
