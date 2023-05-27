@@ -1,6 +1,7 @@
 from Database import Database
 from NCBISearch import NCBIFinder
 
+
 class BioPyParse:
     def __init__(self,verbose:bool|None=False) -> None:
         self.database = None
@@ -8,17 +9,21 @@ class BioPyParse:
         self.verbose = verbose
         pass
 
+
     def __str__(self) -> str:
         return "Biologia Computazionale Team Sapienza 2023"
     
+
     def newDatabase(self,databaseName:str,clientIp:str="localhost",clientPort:int=27017) -> None:
         self.database = Database.New(clientIp,clientPort)
         self.database.addDatabaseName(databaseName)
         return
     
+
     def showCollections(self):
         return self.database.showCollections()
     
+
     def importTaxonFromList(self,listTaxonNames:list[str],collectionName:str|None = "taxonomy_data",next_level:bool|None=True) -> None:
         '''Function that, given a list of Taxonomy ID, add the relative specie to collection_data branch in Biologia DB,
             if it is not already present in list'''
@@ -36,6 +41,7 @@ class BioPyParse:
             except Exception as e:
                 print(f"Raise Exception: {e} searching: {name}")
     
+
     def generateTaxonomyTree(self,collectionName:str|None = "taxonomy_tree",taxonomyCollection:str|None = "taxonomy_data") -> None:
         '''Function that retrieves datas from collection_data of MongoDB and
             create a new collection, taxonomy_tree, that contain the Lineage for
@@ -76,12 +82,21 @@ class BioPyParse:
                         }
                 self.database.updateOneCollection(collectionName,{"TaxId":res["ParentTaxId"]},{"$push":{"SubClasses":newDataPush}})
     
-    def importNucleotide(self,collectionName:str|None = "nucleotide_data",taxonomyCollection:str|None = "taxonomy_data"):
+
+    def importData(self,collectionName:str|None = "nucleotide_data",taxonomyCollection:str|None = "taxonomy_data", typeimport:str|None = "n") -> None:
+        '''Function that retrieve data from NCBI accessing to Nucleotide or Protein sections.
+        if typeimport argument is not given, default value connects to Nucleotide; else
+        if typeimport is equal to "p" the access point to Protein'''
         all_taxons_id = self.database.findManyCollection(taxonomyCollection,{},{"TaxId":1})
         for taxTerm in all_taxons_id:
             taxId = taxTerm["TaxId"]
             try:
-                nucleos = self.ncbi.ncbiSearchNucleo(f"txid{taxId}")
+                if typeimport == "n":
+                    nucleos = self.ncbi.ncbiSearchNucleo(f"txid{taxId}")
+                elif typeimport == "p":
+                    nucleos = self.ncbi.ncbiSearchProtein(f"txid{taxId}")
+                else:
+                    raise KeyError(f"typeimport invalid: {typeimport}")
                 if self.verbose:
                     print(f"Length of {taxId}: {len(nucleos)}")
                 for nucleo in nucleos:
@@ -90,21 +105,9 @@ class BioPyParse:
             except Exception as e:
                 print(f"Raise Exception: {e} searching: {taxId}")
     
-    def importProtein(self,collectionName:str|None = "protein_data",taxonomyCollection:str|None = "taxonomy_data"):
-        all_taxons_id = self.database.findManyCollection(taxonomyCollection,{},{"TaxId":1})
-        for taxTerm in all_taxons_id:
-            taxId = taxTerm["TaxId"]
-            try:
-                nucleos = self.ncbi.ncbiSearchNucleo(f"txid{taxId}")
-                if self.verbose:
-                    print(f"Length of {taxId}: {len(nucleos)}")
-                for nucleo in nucleos:
-                    nucleo.pop("GBSeq_sequence",None)
-                    self.database.insertOneCollection(collectionName,nucleo)
-            except Exception as e:
-                print(f"Raise Exception: {e} searching: {taxId}")
-    
+
     def createTable(self,collectionName:str|None = "table",taxonomyCollection:str|None = "taxonomy_data",nucleotideCollection:str|None = "nucleotide_data",proteinCollection:str|None = "protein_data"):
+        '''Function that generate two tables from table_basic and table_complete collections, searching for Products per quantities'''
         filter = {"GBSeq_feature-table.GBFeature_key":"CDS","GBSeq_feature-table.GBFeature_quals.GBQualifier_name":"product"}
         proj = {"GBSeq_feature-table":1,"GBSeq_organism":1}
         dataResult = self.database.findManyCollection(nucleotideCollection,filter, proj)
@@ -164,9 +167,6 @@ class BioPyParse:
             self.database.insertOneCollection(f"{collectionName}_basic",inserterBase)
             self.database.insertOneCollection(f"{collectionName}_basic",inserterCompl)
             control += 1   
-
-
-
 
 
 def findSpeciesFromFile(filepath:str,splitColumns:str|None=";",indexSearch:int|None=0,fromLine:int|None=0) -> list[str]:
