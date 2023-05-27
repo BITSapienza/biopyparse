@@ -19,11 +19,12 @@ class BioPyParse:
         self.database.addDatabaseName(databaseName)
         return
     
-
-    def showCollections(self):
+    def showCollections(self) -> list[str]:
         return self.database.showCollections()
-    
 
+    def setEmailAndToken(self,email:str,token:str) -> None:
+        self.ncbi.setEmailAndToken(email,token)
+    
     def importTaxonFromList(self,listTaxonNames:list[str],collectionName:str|None = "taxonomy_data",next_level:bool|None=True) -> None:
         '''Function that, given a list of Taxonomy ID, add the relative specie to collection_data branch in Biologia DB,
             if it is not already present in list'''

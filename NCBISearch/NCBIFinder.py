@@ -1,4 +1,9 @@
-from Bio import SeqIO, Entrez
+from Bio import Entrez
+
+
+def setEmailAndToken(email:str,token:str) -> None:
+    Entrez.email = email
+    Entrez.api_key = token
 
 def ncbiSearchTaxon(name:str) -> list[dict] | None:
     '''Function that submit queries with given TaxonomyIDs to NCBI platform, section Taxonomy.
