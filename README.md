@@ -6,7 +6,7 @@
 
 [Università La Sapienza Roma](https://www.uniroma1.it/en), [Dipartimento di Informatica](https://www.studiareinformatica.uniroma1.it/)
 
-![Sapienza Università di Roma](https://www.uniroma1.it/sites/default/files/images/logo/sapienza-big.png)
+![Sapienza Università di Roma](/logos/sapienza-big.png)
 
 ### Credits
 
