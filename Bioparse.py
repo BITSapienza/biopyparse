@@ -1,6 +1,6 @@
 from Database import Database
 from NCBISearch import NCBIFinder
-
+import xml.etree.ElementTree as ET
 
 class BioPyParse:
     def __init__(self,verbose:bool|None=False) -> None:
@@ -168,6 +168,42 @@ class BioPyParse:
             self.database.insertOneCollection(f"{collectionName}_basic",inserterBase)
             self.database.insertOneCollection(f"{collectionName}_basic",inserterCompl)
             control += 1   
+    
+    def importSRA(self,txIds:list[str],sraCollection:str|None="sequences_data") -> None:
+        '''Import SRA Data in a collection. The data are retrieved from ncbi search and an algorithm to convert xml object into a dictionary'''
+        for txId in txIds:
+            try:
+                xmlString = self.ncbi.sraFind(txId)
+                if not xmlString:
+                    pass
+                root = ET.fromstring(xmlString)
+                if self.verbose:
+                    print(print(f"Organism: {txId}, Size: {len(root)}"))
+                seq_list = []
+                for child in root:
+                    dict_seq = importSRA_aux(child)
+                    seq_list.append(dict_seq)
+                self.database.insertManyCollection(sraCollection,seq_list)
+            except Exception as e:
+               print(f"Raise Exception: {e} searching: {txId}")
+
+
+
+def importSRA_aux(obj:ET.Element) -> dict:
+    '''Auxiliary funcion that convert the xml object xml.etree.ElementTree.Element into a dictionary'''
+    response = {}
+    for key, value in obj.attrib.items():
+        response[key] = value
+    itern = 0
+    for child in obj:
+        if child.tag in response:
+            child.tag = child.tag + f"_{itern}"
+            itern += 1
+        response[child.tag] = importSRA_aux(child)
+        if child.text:
+            response[child.tag]["value"] = child.text
+    return response
+
 
 
 def findSpeciesFromFile(filepath:str,splitColumns:str|None=";",indexSearch:int|None=0,fromLine:int|None=0) -> list[str]:

@@ -45,3 +45,15 @@ def ncbiSearchProtein(name:str) -> list[dict] | None:
     handle = Entrez.efetch(db="protein", id=record["IdList"], rettype='gb',retmode="xml",complexity=1)
     read = Entrez.read(handle)
     return read
+
+def sraFind(name:str) -> str | None:
+    '''Function that merge data found on NCBI between Genome and Nucleotide section and
+    return a xml string'''
+    handle = Entrez.esearch(db='sra', term=name + "[Organism] AND \"biomol rna\"[Properties] AND \"library layout paired\"[Properties]", retmode='text', retmax=10000)
+    record = Entrez.read(handle, validate=False)
+    handle.close()
+    if len(record["IdList"]) == 0:
+        raise Exception("List Empty")
+    handle = Entrez.efetch(db="sra", id=record["IdList"], retmode='xml')
+    handle = handle.read().decode(encoding='utf-8')
+    return handle
