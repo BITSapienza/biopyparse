@@ -144,6 +144,9 @@ Auxiliary collections (assembled data):
 }
 ```
 
+# Module Structure
+
+<img src="logos/BioPyParse.png"  width="600" height="500" alt="Image Module Structure">
 
 # Modules used
 
