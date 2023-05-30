@@ -31,6 +31,9 @@ class Database:
     def insertOneCollection(self,collection:str,inserter:dict) -> None:
         self.db[collection].insert_one(inserter)
     
+    def insertManyCollection(self,collection:str,inserter:dict) -> None:
+        self.db[collection].insert_many(inserter)
+    
     def updateOneCollection(self,collection:str,filter:dict,update:dict) -> None:
         self.db[collection].update_one(filter,update)
 
