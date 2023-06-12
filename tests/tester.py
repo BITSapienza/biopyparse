@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from Bioparse import BioPyParse, findSpeciesFromFile
 
 # Init the module

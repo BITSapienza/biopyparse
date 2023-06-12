@@ -117,9 +117,13 @@ Auxiliary collections (assembled data):
 
 # Module Structure
 <img src="logos/BioPyParse.png"  width="600" height="500" alt="Image Module Structure">
-- The input CSV file is optional and parsed by the findSpeciesFromFile function;
-- This module is bound to MongoDB Database through pymongo library. The user can execute various commands to import or get data from database;
+
+- The input CSV file is optional and parsed by the findSpeciesFromFile function
+
+- This module is bound to MongoDB Database through pymongo library. The user can execute various commands to import or get data from database
+
 - Entrez is used to retrieve data from NCBI. Other auxiliary functions will be used to parse data in input.
+
 - The output files (csv/json) has been implemented for Vulgaris Platform development. Methods for creating them could be implemented in future and built based on actual module structure.
 
 # Tester & Code Example
@@ -159,19 +163,24 @@ will create a taxonomic tree structured like this
 ]
 ```
 and it'll import it into the database with the collection name as `collectionName`.
+
+## Code Example
 Follows a slice of code for example execution set:
 
 ```python3
 from Bioparse import BioPyParse
+
 bio = BioPyParse(verbose=True)
 bio.newDatabase("BiologyTest")
+
 organismList = ["Chlorella", "Scenedesmus"]
 taxIds = bio.importTaxonFromList(organismList,collectionName="taxonomy")
+
 bio.generateTaxonomyTree(collectionName="taxon_tree",taxonomyCollection="taxonomy")
 ```
 
 
 # Modules used
 
-Biopython:            "https://biopython.org/wiki/Documentation"
-Pymongo:              "https://pymongo.readthedocs.io/en/stable/"
+- Biopython:            "https://biopython.org/wiki/Documentation"
+- Pymongo:              "https://pymongo.readthedocs.io/en/stable/"
