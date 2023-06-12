@@ -2,6 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![MongoDb](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+[![Pip](https://img.shields.io/badge/pip-v22.0.2-blue)](https://pypi.org/project/pip/)
 
 
 [Università La Sapienza Roma](https://www.uniroma1.it/en), [Dipartimento di Informatica](https://www.studiareinformatica.uniroma1.it/)
@@ -20,36 +21,7 @@ Biopyparse is a simple module used to retrive data from [NCBI](https://www.ncbi.
 
 This program enable you to manage a large dataset of data accessible from other technologies and libraries. For faster data retrieval we recommend you to add you [NCBI login Email](https://account.ncbi.nlm.nih.gov/) with your [API Key](https://www.ncbi.nlm.nih.gov/account/settings/).
 
-## Methods examples
 
-The module consists of a class, called biopyparse, and a function. The class is initialized without access to the database which must be set with the method: 
-```python
-def newDatabase(self,databaseName:str,clientIp:str="localhost",clientPort:int=27017)
-```
-
-Assuming you have downloaded the desired taxonomic data, the method:
-```python
-def generateTaxonomyTree(self,collectionName:str|None = "taxonomy_tree",taxonomyCollection:str|None = "taxonomy_data")
-```
-will create a taxonomic tree structured like this
-```json
-[
-    {
-        "ScientificName": "ExampleScientificName",
-        "TaxId": "ExampleTaxId",
-        "Rank": "ExampleRank",
-        "SubClasses": [
-            {
-                "ScientificName": "SubExampleScientificName",
-                "TaxId": "SubExampleTaxId"
-            },
-            ...
-        ]
-    },
-    ...
-]
-```
-and it'll import it into the database with the collection name as `collectionName`.
 
 # Database Description
 
@@ -148,9 +120,71 @@ Auxiliary collections (assembled data):
 
 <img src="logos/BioPyParse.png"  width="600" height="500" alt="Image Module Structure">
 
-# Modules used
+- The input CSV file is optional and parsed by the findSpeciesFromFile function
 
-Pip3:                 "https://pip.pypa.io/en/stable/"
+- The module is connected by pymongo library to a MongoDb Database. The user can execute various commands to import or get data from the database
+
+- Entrez is used to get data from ncbi. Other auxiliary functions will be used to parse this data
+
+- The output files (csv/json) have been implemented for the development of the Vulgaris platform. Methods for creating them could be implemented and built based on the actual module structure.
+
+# Tester & Code Example
+
+There is a testing file to manage and verify that all methods of the module work correctly.
+The tester can be found at `./tests/tester.py` <br />
+To execute it:
+```code
+python3 tests/tester.py
+```
+## Methods examples
+
+The module consists of a class, called biopyparse, and a function. The class is initialized without access to the database which must be set with the method: 
+```python
+def newDatabase(self,databaseName:str,clientIp:str="localhost",clientPort:int=27017)
+```
+
+Assuming you have downloaded the desired taxonomic data, the method:
+```python
+def generateTaxonomyTree(self,collectionName:str|None = "taxonomy_tree",taxonomyCollection:str|None = "taxonomy_data")
+```
+will create a taxonomic tree structured like this
+```json
+[
+    {
+        "ScientificName": "ExampleScientificName",
+        "TaxId": "ExampleTaxId",
+        "Rank": "ExampleRank",
+        "SubClasses": [
+            {
+                "ScientificName": "SubExampleScientificName",
+                "TaxId": "SubExampleTaxId"
+            },
+            ...
+        ]
+    },
+    ...
+]
+```
+and it'll import it into the database with the collection name as `collectionName`.
+
+The following code is an example of using the module
+
+```python3
+from Bioparse import BioPyParse
+
+bio = BioPyParse(verbose=True)
+
+bio.newDatabase("BiologyTest")
+
+organismList = ["Chlorella", "Scenedesmus"]
+
+taxIds = bio.importTaxonFromList(organismList,collectionName="taxonomy")
+
+bio.generateTaxonomyTree(collectionName="taxon_tree",taxonomyCollection="taxonomy")
+```
+
+
+# Modules used
 
 Biopython:            "https://biopython.org/wiki/Documentation"
 

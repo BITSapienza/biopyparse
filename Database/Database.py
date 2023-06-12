@@ -36,6 +36,9 @@ class Database:
     
     def updateOneCollection(self,collection:str,filter:dict,update:dict) -> None:
         self.db[collection].update_one(filter,update)
+    
+    def deleteOneCollection(self,collection:str,filter:dict) -> None:
+        self.db[collection].delete_one(filter)
 
 def New(clientIp:str,clientPort:int) -> Database:
     return Database(clientIp,clientPort)

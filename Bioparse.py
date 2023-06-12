@@ -7,6 +7,11 @@ class BioPyParse:
         self.database = None
         self.ncbi = NCBIFinder
         self.verbose = verbose
+        self.FIND = "find"
+        self.FINDONE = "findOne"
+        self.DELETEONE = "delete"
+        self.INSERT = "insert"
+        self.INSERTONE = "insertOne"
         pass
 
 
@@ -25,9 +30,27 @@ class BioPyParse:
     def setEmailAndToken(self,email:str,token:str) -> None:
         self.ncbi.setEmailAndToken(email,token)
     
-    def importTaxonFromList(self,listTaxonNames:list[str],collectionName:str|None = "taxonomy_data",next_level:bool|None=True) -> None:
+    def requestDatabase(self,typeRequest:str,collectionName:str,filter:dict,projection:dict) -> list[str] | None :
+        data_list = list()
+        if typeRequest == "find":
+            data = self.database.findManyCollection(collectionName,filter,projection)
+            data_list = list(data)
+        elif typeRequest == "findOne":
+            data = self.database.findOneCollection(collectionName,filter,projection)
+            data_list = list(data)
+        elif typeRequest == "delete":
+            data = self.database.deleteOneCollection(collectionName,filter)
+        elif typeRequest == "insert":
+            data = self.database.insertManyCollection(collectionName,filter)
+        elif typeRequest == "insertOne":
+            data = self.database.insertOneCollection(collectionName,filter,projection)
+        else:
+            return
+        return data_list
+    
+    def importTaxonFromList(self,listTaxonNames:list[str],collectionName:str|None = "taxonomy_data",next_level:bool|None=True) -> list[str] | None:
         '''Function that, given a list of Taxonomy ID, add the relative specie to collection_data branch in Biologia DB,
-            if it is not already present in list'''
+            if it is not already present in list. It returns a list of all the taxonomy id imported.'''
         str_next_leve = "[next level]" if next_level else ""
         for name in listTaxonNames:
             try:
@@ -41,6 +64,8 @@ class BioPyParse:
                         self.database.insertOneCollection(collectionName,tax)
             except Exception as e:
                 print(f"Raise Exception: {e} searching: {name}")
+        taxIds = self.database.findManyCollection(collectionName,{},{"_id":0,"TaxId":1})
+        return list(taxIds)
     
 
     def generateTaxonomyTree(self,collectionName:str|None = "taxonomy_tree",taxonomyCollection:str|None = "taxonomy_data") -> None:
@@ -130,7 +155,7 @@ class BioPyParse:
                                     "ProductName" : prod["GBQualifier_value"],
                                     "QtyProduct" : 1
                                     })
-        #Chi ha levato Country?
+                                
         dataRank = self.database.findManyCollection(taxonomyCollection,{},{"ScientificName":1,"TaxId":1,"_id":0})
         control = 0
         for data in dataRank:
@@ -166,7 +191,7 @@ class BioPyParse:
                 "Country": []
             }
             self.database.insertOneCollection(f"{collectionName}_basic",inserterBase)
-            self.database.insertOneCollection(f"{collectionName}_basic",inserterCompl)
+            self.database.insertOneCollection(f"{collectionName}_compl",inserterCompl)
             control += 1   
     
     def importSRA(self,txIds:list[str],sraCollection:str|None="sequences_data") -> None:
