@@ -16,11 +16,8 @@
 # MicroAlgae DB
 - This repository is part of MicroAlgae DB project, formed by various modules. Visit the homepage at link https://github.com/BITSapienza for a general guide and automatic installation through docker-compose.
 
-
 # BioPyParse Module Description
-
 Biopyparse is a simple module used to retrive data from [NCBI](https://www.ncbi.nlm.nih.gov/) and save it to a mongo-db database.
-
 This program enable you to manage a large dataset of data accessible from other technologies and libraries. For faster data retrieval we recommend you to add you [NCBI login Email](https://account.ncbi.nlm.nih.gov/) with your [API Key](https://www.ncbi.nlm.nih.gov/account/settings/).
 
 
@@ -119,19 +116,13 @@ Auxiliary collections (assembled data):
 ```
 
 # Module Structure
-
 <img src="logos/BioPyParse.png"  width="600" height="500" alt="Image Module Structure">
-
-- The input CSV file is optional and parsed by the findSpeciesFromFile function
-
-- The module is connected by pymongo library to a MongoDb Database. The user can execute various commands to import or get data from the database
-
-- Entrez is used to get data from ncbi. Other auxiliary functions will be used to parse this data
-
-- The output files (csv/json) have been implemented for the development of the Vulgaris platform. Methods for creating them could be implemented and built based on the actual module structure.
+- The input CSV file is optional and parsed by the findSpeciesFromFile function;
+- This module is bound to MongoDB Database through pymongo library. The user can execute various commands to import or get data from database;
+- Entrez is used to retrieve data from NCBI. Other auxiliary functions will be used to parse data in input.
+- The output files (csv/json) has been implemented for Vulgaris Platform development. Methods for creating them could be implemented in future and built based on actual module structure.
 
 # Tester & Code Example
-
 There is a testing file to manage and verify that all methods of the module work correctly.
 The tester can be found at `./tests/tester.py` <br />
 To execute it:
@@ -168,20 +159,14 @@ will create a taxonomic tree structured like this
 ]
 ```
 and it'll import it into the database with the collection name as `collectionName`.
-
-The following code is an example of using the module
+Follows a slice of code for example execution set:
 
 ```python3
 from Bioparse import BioPyParse
-
 bio = BioPyParse(verbose=True)
-
 bio.newDatabase("BiologyTest")
-
 organismList = ["Chlorella", "Scenedesmus"]
-
 taxIds = bio.importTaxonFromList(organismList,collectionName="taxonomy")
-
 bio.generateTaxonomyTree(collectionName="taxon_tree",taxonomyCollection="taxonomy")
 ```
 
@@ -189,5 +174,4 @@ bio.generateTaxonomyTree(collectionName="taxon_tree",taxonomyCollection="taxonom
 # Modules used
 
 Biopython:            "https://biopython.org/wiki/Documentation"
-
 Pymongo:              "https://pymongo.readthedocs.io/en/stable/"
